@@ -1,13 +1,557 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AuditLens — IIA Congres 2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuditLens — IIA Congres 2026</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F4F0E6;--cream-soft:#ECE6D6;--paper:#FBF8F1;--ink:#1A1B2E;--ink-2:#2B2C40;--ink-soft:#555668;--slate:#8B8B95;--slate-soft:#D6D2C7;--line:#D9D4C5;--rust:#B83C2F;--rust-soft:#EBD5CF;--rust-deep:#8C2D24;--gold:#A07A2C;--gold-soft:#E7DABA;--green:#4A6B3A;--green-soft:#DAE2CC}
+body{margin:0;background:var(--cream)}
+.al-app{background:var(--cream);color:var(--ink);font-family:'Geist',system-ui,sans-serif;min-height:100vh}
+.al-display{font-family:'Fraunces',Georgia,serif;letter-spacing:-0.025em}
+.al-mono{font-family:'Geist Mono','SF Mono',monospace}
+.al-tag{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-soft)}
+.al-soft{color:var(--ink-soft)}.al-slate{color:var(--slate)}.al-rust{color:var(--rust)}.al-gold{color:var(--gold)}.al-green{color:var(--green)}
+.al-card{background:var(--paper);border:1px solid var(--line);border-radius:2px;transition:all 0.2s ease}
+.al-card-clickable{cursor:pointer}
+.al-card-clickable:hover{border-color:var(--ink);box-shadow:0 6px 20px rgba(26,27,46,0.06);transform:translateY(-1px)}
+.al-btn-primary{background:var(--ink);color:var(--cream);font-weight:500;border:1px solid var(--ink);transition:all 0.2s ease;cursor:pointer;border-radius:2px;padding:12px 20px;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.al-btn-primary:hover{background:var(--ink-2)}
+.al-btn-rust{background:var(--rust);color:var(--cream);font-weight:500;border:1px solid var(--rust);transition:all 0.2s ease;cursor:pointer;border-radius:2px;padding:12px 20px;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.al-btn-rust:hover{background:var(--rust-deep)}
+.al-btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);font-weight:500;transition:all 0.2s ease;cursor:pointer;border-radius:2px;padding:12px 20px;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.al-btn-ghost:hover{background:var(--ink);color:var(--cream)}
+.al-btn-text{background:transparent;color:var(--ink-soft);border:none;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.al-btn-text:hover{color:var(--ink)}
+.al-badge{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:2px;display:inline-flex;align-items:center;gap:6px}
+.al-badge-rust{background:var(--rust-soft);color:var(--rust-deep)}
+.al-badge-gold{background:var(--gold-soft);color:var(--gold)}
+.al-badge-green{background:var(--green-soft);color:var(--green)}
+.al-badge-ink{background:var(--ink);color:var(--cream)}
+.al-badge-line{border:1px solid var(--line);color:var(--ink-soft)}
+.al-dot{width:14px;height:14px;border-radius:50%;background:var(--slate-soft);transition:all 0.5s ease;flex-shrink:0;display:inline-block}
+.al-dot-sample{background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink-soft)}
+.al-dot-scanning{animation:scanPulse 1.4s ease-in-out infinite}
+.al-dot-scanning-sample{animation:scanPulse 1.4s ease-in-out infinite;box-shadow:inset 0 0 0 2px var(--ink-soft)}
+.al-dot-anomaly{background:var(--rust) !important;box-shadow:0 0 0 4px var(--rust-soft),0 0 16px rgba(184,60,47,0.5);transform:scale(1.5);animation:anomalyAppear 0.6s ease-out}
+@keyframes scanPulse{0%,100%{background:var(--slate-soft)}50%{background:var(--gold-soft)}}
+@keyframes anomalyAppear{0%{transform:scale(0);background:var(--gold)}60%{transform:scale(1.9)}100%{transform:scale(1.5)}}
+.al-fadein{animation:alFadeIn 0.5s ease forwards;opacity:0}
+.al-fadein-1{animation-delay:0.1s}.al-fadein-2{animation-delay:0.3s}.al-fadein-3{animation-delay:0.5s}
+@keyframes alFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.al-statusline{font-family:'Geist Mono',monospace;font-size:13px;color:var(--ink-soft)}
+.al-statusline-active{color:var(--ink)}
+.al-divider-h{height:1px;background:var(--line);width:100%}
+.al-pulse-cursor::after{content:'▮';margin-left:4px;animation:blink 1s infinite;color:var(--gold)}
+@keyframes blink{50%{opacity:0}}
+.al-control-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}
+.al-control-row:last-child{border-bottom:none}
+.al-control-row-missed{animation:missedSweep 0.8s ease}
+@keyframes missedSweep{0%{background:var(--rust-soft)}100%{background:transparent}}
+.al-status-pill{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px}
+.dot-grid{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:8px;max-width:760px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+.stat-tile{padding:24px;background:var(--paper);transition:all 0.3s ease}
+.detail-grid{display:grid;grid-template-columns:1fr 2fr;gap:40px}
+.action-bar-btns{display:flex;gap:12px;flex-wrap:wrap}
+.header-inner{max-width:1152px;margin:0 auto;padding:20px 32px;display:flex;align-items:center;justify-content:space-between}
+.main-inner{max-width:1152px;margin:0 auto;padding:48px 32px}
+.footer-inner{max-width:1152px;margin:0 auto;padding:20px 32px;display:flex;align-items:center;justify-content:space-between}
+.anomaly-card-inner{display:flex;align-items:flex-start;gap:24px}
+.anomaly-card-body{flex:1}
+.anomaly-card-meta{display:flex;align-items:center;gap:20px;font-size:14px;color:var(--ink-soft)}
+.severity-bar-wrap{display:flex;align-items:center;gap:12px}
+.severity-track{flex:1;height:4px;max-width:120px;background:var(--slate-soft)}
+.severity-fill{height:100%;background:var(--rust)}
+.controls-block-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px}
+.scan-badge{font-family:'Geist Mono',monospace;font-size:10px;padding:4px 8px;background:var(--gold-soft);color:var(--gold)}
+.status-action{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.hero-section{margin-bottom:40px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const TOTAL_INVOICES = 847;
+const SAMPLE_SIZE = 25;
+const PERIOD = 'Q3 2025';
+const DOT_COUNT = 200;
+const SAMPLE_DOT_INDICES = [4,17,28,41,52,67,79,88,101,113,128,142,159,171,186];
+const ANOMALY_DOT_INDICES = [56,124,177];
+
+const ANOMALIES = [
+  {
+    id:'A1',title:'Mogelijke opdrachtsplitsing',
+    teaser:'Twee facturen, één leverancier, beide net onder de €50k-drempel.',
+    severityScore:92,invoiceRef:'F-2025-08-3478 + F-2025-08-3501',
+    vendor:'Heuvels Bouw & Onderhoud B.V.',amounts:['€48.500','€49.200'],
+    totalAmount:'€97.700',category:'Terreinonderhoud',location:'Kazerne Oirschot',
+    dateline:'12-08-2025 en 16-08-2025',
+    aiReasoning:[
+      'Twee facturen van dezelfde leverancier voor dezelfde dienst binnen 4 dagen.',
+      'Beide bedragen tussen €48k en €50k — net onder de drempel voor verplichte tweede handtekening.',
+      'Patroon herhaald 3× eerder dit jaar (apr/jun/jul) bij dezelfde leverancier.',
+      'Gecombineerd bedrag (€97.700) had aanbestedingsplicht moeten triggeren.',
+    ],
+    controlsThatMissed:[
+      {code:'IC-04',label:'Tweede handtekening boven €50.000',note:'Beide facturen onder drempel — controle gaf geen signaal.'},
+      {code:'IC-12',label:'Aanbestedingsplicht-check',note:'Per factuur beoordeeld, niet op opdrachtniveau.'},
+    ],
+    followUps:[
+      'Hoe rechtvaardigt de inkoper de gespreide opdrachtverlening?',
+      'Welke andere kazernes zijn dit jaar door deze leverancier onderhouden?',
+      'Is er een raamovereenkomst die dit werk had moeten dekken?',
+    ],
+  },
+  {
+    id:'A2',title:'Grote uitgave, leverancier zonder voorgeschiedenis',
+    teaser:'Nieuwe BV. Woonadres als vestiging. €127k voor "strategisch advies".',
+    severityScore:88,invoiceRef:'F-2025-09-4127',
+    vendor:'NovaTech Solutions B.V.',amounts:['€127.000'],
+    totalAmount:'€127.000',category:'IT-advies, strategisch',location:'Bestuursstaf',
+    dateline:'07-09-2025',
+    aiReasoning:[
+      'Leverancier ingeschreven 14-03-2025 — 5,8 maanden vóór eerste factuur.',
+      'KvK-vestigingsadres komt overeen met een woonadres in een wijk zonder zakelijke vestigingen.',
+      'Geen voorafgaande inkooporders, geen traceerbaar offerteproces.',
+      'Omschrijving zonder concrete deliverables of urenstaten in bijlage.',
+    ],
+    controlsThatMissed:[
+      {code:'IC-07',label:'Leveranciersvalidatie via KvK',note:'KvK-check uitgevoerd — oprichtingsdatum niet gewogen.'},
+      {code:'IC-15',label:'Onderbouwing inkoopopdracht',note:'Tekstuele onderbouwing aanwezig, niet inhoudelijk getoetst.'},
+    ],
+    followUps:[
+      'Wie is intern opdrachtgever en hoe is deze leverancier geselecteerd?',
+      'Welke concrete deliverables zijn opgeleverd en geaccepteerd?',
+      'Is dezelfde dienst beschikbaar binnen een lopend raamcontract?',
+    ],
+  },
+  {
+    id:'A3',title:'Goedkeuring in 3 minuten op zaterdagavond',
+    teaser:'Spoed-aanvraag om 22:44, akkoord om 22:47. €89,4k.',
+    severityScore:74,invoiceRef:'F-2025-07-2891',
+    vendor:'MariSupply Nederland B.V.',amounts:['€89.400'],
+    totalAmount:'€89.400',category:'Spoedbestelling onderhoudsmateriaal',location:'Marinekazerne Den Helder',
+    dateline:'19-07-2025 — ingediend 22:44, goedgekeurd 22:47',
+    aiReasoning:[
+      'Goedkeuringstijd 3 minuten — historisch gemiddelde voor deze categorie: 2,4 werkdagen.',
+      'Indiening én goedkeuring buiten kantoortijden (zaterdagavond).',
+      'Goedkeurder handelde dit kwartaal 17 facturen van deze leverancier in <10 minuten af.',
+      'Categorie "spoed" gebruikt bij 41% van facturen van deze leverancier (sectorgemiddelde: 6%).',
+    ],
+    controlsThatMissed:[
+      {code:'IC-09',label:'Functiescheiding aanvrager / goedkeurder',note:'Formeel andere personen — feitelijk patroon van rubber-stamping.'},
+      {code:'IC-22',label:'Spoedprocedure-toets',note:'Motivatie aanwezig in aanvraag, niet inhoudelijk getoetst.'},
+    ],
+    followUps:[
+      'Welke fysieke spoed rechtvaardigde indiening om 22:44 op zaterdag?',
+      'Wat is de werkrelatie tussen aanvrager, goedkeurder en deze leverancier?',
+      'Is er een vergelijkbaar patroon rond andere weekenden?',
+    ],
+  },
+];
+
+const CONTROLS = [
+  {code:'IC-04',label:'Tweede handtekening boven €50.000',timesActive:23},
+  {code:'IC-07',label:'Leveranciersvalidatie via KvK',timesActive:847},
+  {code:'IC-09',label:'Functiescheiding aanvrager/goedkeurder',timesActive:847},
+  {code:'IC-12',label:'Aanbestedingsplicht-check',timesActive:38},
+  {code:'IC-15',label:'Onderbouwing inkoopopdracht',timesActive:847},
+  {code:'IC-22',label:'Spoedprocedure-toets',timesActive:51},
+];
+
+function SeverityBar({score}) {
+  return (
+    <div className="severity-bar-wrap">
+      <span className="al-mono al-soft" style={{fontSize:10}}>RISICOSCORE</span>
+      <div className="severity-track"><div className="severity-fill" style={{width:score+'%'}} /></div>
+      <span className="al-mono" style={{fontSize:13,color:'var(--rust-deep)'}}>{score}</span>
+    </div>
+  );
+}
+
+function DotGrid({phase,decidedIds}) {
+  const showAnomalies = phase==='revealed_anomalies';
+  return (
+    <div className="dot-grid">
+      {Array.from({length:DOT_COUNT}).map((_,i)=>{
+        const isSample = SAMPLE_DOT_INDICES.includes(i);
+        const anomalyIdx = ANOMALY_DOT_INDICES.indexOf(i);
+        const isAnomaly = anomalyIdx>=0;
+        const anomalyId = isAnomaly ? ANOMALIES[anomalyIdx].id : null;
+        const decided = anomalyId && decidedIds.includes(anomalyId);
+        let cls = 'al-dot';
+        if((phase==='sample'||phase==='revealed_controls')&&isSample) cls+=' al-dot-sample';
+        if(phase==='scanning') cls+=isSample?' al-dot-scanning-sample':' al-dot-scanning';
+        if(showAnomalies){
+          if(isAnomaly&&!decided) cls+=' al-dot-anomaly';
+          else if(isSample) cls+=' al-dot-sample';
+        }
+        return <span key={i} className={cls} />;
+      })}
+    </div>
+  );
+}
+
+function StatTile({label,value,sub,dimmed,highlight,rust}) {
+  return (
+    <div className="stat-tile" style={{
+      background:highlight?(rust?'var(--rust-soft)':'var(--cream-soft)'):'var(--paper)',
+      opacity:dimmed?0.6:1
+    }}>
+      <div className="al-tag" style={{marginBottom:8}}>{label}</div>
+      <div className="al-display" style={{fontSize:28,fontWeight:500,lineHeight:1,marginBottom:4,color:rust?'var(--rust)':'var(--ink)'}}>{value}</div>
+      <div className="al-mono al-soft" style={{fontSize:11}}>{sub}</div>
+    </div>
+  );
+}
+
+function ControlsBlock({phase}) {
+  const isControls = phase==='revealed_controls';
+  const isAnomalies = phase==='revealed_anomalies';
+  return (
+    <div className="al-card" style={{padding:32,marginBottom:48,background:isControls?'var(--cream-soft)':'var(--paper)'}}>
+      <div className="controls-block-header">
+        <span style={{fontSize:20,color:isControls?'var(--green)':'var(--gold)',marginTop:2}}>
+          {isControls ? '✓' : '⚠'}
+        </span>
+        <div>
+          <div className="al-tag" style={{marginBottom:8}}>{isControls?'Werking interne controles Q3 2025':'Diezelfde controles, opnieuw bekeken'}</div>
+          <div className="al-display" style={{fontSize:22,fontWeight:500,marginBottom:8}}>
+            {isControls?'Zes controles. Een kwartaal lang actief. Nul bevindingen.':'Zes controles. Geen één van deze drie gevallen gesignaleerd.'}
+          </div>
+          <p className="al-soft" style={{margin:0,maxWidth:680}}>
+            {isControls
+              ?'Het controleraamwerk doet wat het moet doen — formeel. Auditrapport zou hier kunnen stoppen.'
+              :'De controles werkten naar behoren — formeel niets misgegaan. Maar geen ervan zou de drie hierboven hebben opgemerkt.'}
+          </p>
+        </div>
+      </div>
+      <div className="al-divider-h" style={{marginBottom:8}} />
+      {CONTROLS.map((c,idx)=>(
+        <div key={c.code} className={'al-control-row'+(isAnomalies?' al-control-row-missed':'')} style={{animationDelay:idx*80+'ms'}}>
+          <div style={{display:'flex',alignItems:'center',gap:16}}>
+            <span className="al-mono al-soft" style={{fontSize:12,width:48}}>{c.code}</span>
+            <span style={{fontSize:14}}>{c.label}</span>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:24}}>
+            <span className="al-mono al-soft" style={{fontSize:12}}>{c.timesActive.toLocaleString('nl-NL')}× actief</span>
+            {isControls
+              ? <span className="al-status-pill" style={{background:'var(--green-soft)',color:'var(--green)'}}>✓ in orde</span>
+              : <span className="al-status-pill" style={{background:'var(--rust-soft)',color:'var(--rust-deep)'}}>✕ niet onderkend</span>
+            }
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AnomalyCard({anomaly,decision,onClick,delay}) {
+  const label = {accepted:'Bevinding geaccepteerd',rejected:'Verworpen',investigating:'Onderzoek loopt'}[decision];
+  return (
+    <div onClick={onClick} className="al-card al-card-clickable al-fadein" style={{padding:24,animationDelay:delay}}>
+      <div className="anomaly-card-inner">
+        <span className="al-mono al-soft" style={{fontSize:11,paddingTop:2,width:24}}>{anomaly.id}</span>
+        <div className="anomaly-card-body">
+          <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:24,marginBottom:8}}>
+            <div className="al-display" style={{fontSize:18,fontWeight:500}}>{anomaly.title}</div>
+            {decision && <span className="al-badge al-badge-ink">{label}</span>}
+          </div>
+          <p className="al-soft" style={{margin:'0 0 16px',fontSize:15}}>{anomaly.teaser}</p>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:24}}>
+            <div className="anomaly-card-meta">
+              <span>🏢 {anomaly.vendor}</span>
+              <span className="al-mono">{anomaly.totalAmount}</span>
+            </div>
+            <SeverityBar score={anomaly.severityScore} />
+          </div>
+        </div>
+        <span className="al-soft" style={{fontSize:18,paddingTop:2}}>›</span>
+      </div>
+    </div>
+  );
+}
+
+function DetailView({anomaly,decision,followUpsRevealed,onBack,onDecide,onRevealFollowUps}) {
+  return (
+    <div>
+      <button onClick={onBack} className="al-btn-text" style={{marginBottom:32}}>‹ terug naar overzicht</button>
+      <div style={{marginBottom:40}}>
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
+          <span className="al-tag">{anomaly.id}</span>
+          <span className="al-badge al-badge-rust">⚠ Niet afgedekt door huidige controles</span>
+        </div>
+        <div className="al-display" style={{fontSize:36,fontWeight:500,lineHeight:1.2,marginBottom:12,maxWidth:780}}>{anomaly.title}</div>
+        <p className="al-soft" style={{fontSize:17,margin:0}}>{anomaly.teaser}</p>
+      </div>
+
+      <div className="detail-grid" style={{marginBottom:48}}>
+        <div>
+          <div className="al-tag" style={{marginBottom:16}}>Transactiegegevens</div>
+          {[
+            ['Leverancier',anomaly.vendor,false],
+            ['Bedrag',anomaly.totalAmount,true],
+            ['Splitsing',anomaly.amounts.length>1?anomaly.amounts.join(' + '):'—',true],
+            ['Categorie',anomaly.category,false],
+            ['Locatie',anomaly.location,false],
+            ['Datum',anomaly.dateline,true],
+            ['Referentie',anomaly.invoiceRef,true],
+          ].map(([label,val,mono])=>(
+            <div key={label} style={{marginBottom:16}}>
+              <div className="al-tag" style={{marginBottom:4}}>{label}</div>
+              <div className={mono?'al-mono':''} style={{fontSize:14}}>{val}</div>
+            </div>
+          ))}
+        </div>
+        <div>
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+            <span className="al-badge al-badge-gold">✦ AI-redenering</span>
+            <span className="al-mono al-soft" style={{fontSize:11}}>risicoscore {anomaly.severityScore} / 100</span>
+          </div>
+          <ol style={{listStyle:'none',padding:0,margin:'0 0 32px'}}>
+            {anomaly.aiReasoning.map((r,i)=>(
+              <li key={i} style={{display:'flex',gap:16,marginBottom:12}}>
+                <span className="al-mono al-soft" style={{fontSize:11,paddingTop:2,width:20,flexShrink:0}}>{String(i+1).padStart(2,'0')}</span>
+                <span style={{lineHeight:1.6}}>{r}</span>
+              </li>
+            ))}
+          </ol>
+
+          <div className="al-card" style={{padding:24,marginBottom:24,background:'var(--cream-soft)'}}>
+            <div style={{display:'flex',gap:12,marginBottom:16}}>
+              <span style={{color:'var(--gold)',fontSize:16,flexShrink:0}}>⚠</span>
+              <div>
+                <div className="al-tag" style={{marginBottom:4}}>Welke controles hadden dit moeten zien?</div>
+                <div style={{fontSize:14}}>Bestaande controles gaven geen signaal — niet omdat ze faalden, maar omdat ze niet zo zijn ontworpen.</div>
+              </div>
+            </div>
+            {anomaly.controlsThatMissed.map(c=>(
+              <div key={c.code} style={{display:'flex',gap:16,marginBottom:12,paddingLeft:28}}>
+                <span className="al-mono al-soft" style={{fontSize:12,width:48,flexShrink:0}}>{c.code}</span>
+                <div style={{fontSize:13}}>
+                  <div style={{fontWeight:500}}>{c.label}</div>
+                  <div className="al-soft" style={{marginTop:2}}>{c.note}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {!followUpsRevealed &&
+            <button onClick={onRevealFollowUps} className="al-btn-ghost">? Vraag door · genereer onderzoeksvragen</button>
+          }
+          {followUpsRevealed &&
+            <div className="al-fadein">
+              <div className="al-tag" style={{marginBottom:12}}>✦ Voorgestelde onderzoeksvragen</div>
+              {anomaly.followUps.map((q,i)=>(
+                <div key={i} style={{display:'flex',gap:12,marginBottom:8,fontSize:14}}>
+                  <span className="al-mono al-soft">→</span><span>{q}</span>
+                </div>
+              ))}
+              <div className="al-soft" style={{fontSize:12,fontStyle:'italic',marginTop:12}}>U beoordeelt. De AI vraagt niet — die suggereert.</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div className="al-card" style={{padding:24}}>
+        <div className="status-action">
+          <div>
+            <div className="al-tag" style={{marginBottom:4}}>Uw oordeel als derde lijn</div>
+            <div style={{fontSize:15}}>AI signaleert. Het management herstelt. <span className="al-soft">U beoordeelt of het stelsel werkt.</span></div>
+          </div>
+          <div className="action-bar-btns">
+            <button onClick={()=>onDecide('rejected')} className={decision==='rejected'?'al-btn-primary':'al-btn-ghost'}>✕ Verwerpen</button>
+            <button onClick={()=>onDecide('investigating')} className={decision==='investigating'?'al-btn-primary':'al-btn-ghost'}>⊙ Onderzoek openen</button>
+            <button onClick={()=>onDecide('accepted')} className={decision==='accepted'?'al-btn-primary':'al-btn-ghost'}>✓ Bevinding accepteren</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [phase,setPhase] = useState('idle');
+  const [selected,setSelected] = useState(null);
+  const [decisions,setDecisions] = useState({});
+  const [scanMsgIdx,setScanMsgIdx] = useState(0);
+  const [followUpsRevealed,setFollowUpsRevealed] = useState({});
+
+  const scanMessages = [
+    'AI toetst werking van 6 controles op 847 transacties…',
+    'Vergelijkt met historische patronen…',
+    'Identificeert gevallen die de controles níet afdekken…',
+    'Onderbouwt elk signaal in natuurlijke taal…',
+  ];
+
+  useEffect(()=>{
+    if(phase==='scanning'){
+      let i=0; setScanMsgIdx(0);
+      const iv=setInterval(()=>{
+        i++;
+        if(i>=scanMessages.length){clearInterval(iv);setTimeout(()=>setPhase('revealed_controls'),600);}
+        else setScanMsgIdx(i);
+      },700);
+      return ()=>clearInterval(iv);
+    }
+  },[phase]);
+
+  const reset=()=>{setPhase('idle');setSelected(null);setDecisions({});setFollowUpsRevealed({});};
+  const decide=(id,kind)=>setDecisions(p=>({...p,[id]:kind}));
+  const selAnomaly = selected ? ANOMALIES.find(a=>a.id===selected) : null;
+
+  const isControls = phase==='revealed_controls';
+  const isAnomalies = phase==='revealed_anomalies';
+  const isRevealed = isControls||isAnomalies;
+
+  return (
+    <div className="al-app">
+      <header style={{borderBottom:'1px solid var(--line)'}}>
+        <div className="header-inner">
+          <div style={{display:'flex',alignItems:'center',gap:16}}>
+            <div className="al-display" style={{fontSize:22,fontWeight:500}}>AuditLens</div>
+            <div className="al-tag">Prototype · Defensie · Controles op inkoopproces</div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <span className="al-badge al-badge-line">DEMO · synthetische data</span>
+            {phase!=='idle' && <button onClick={reset} className="al-btn-text">↺ opnieuw</button>}
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <div className="main-inner">
+          {!selAnomaly && (
+            <div>
+              {/* HERO */}
+              <div className="hero-section">
+                <div className="al-tag" style={{marginBottom:12}}>Inkoopproces · {PERIOD}</div>
+                {phase==='idle' && <>
+                  <div className="al-display" style={{fontSize:42,fontWeight:500,lineHeight:1.15,marginBottom:12,maxWidth:880}}>6 interne controles. 847 transacties.<br/>Werken die controles voor de risico's die u denkt af te dekken?</div>
+                  <p className="al-soft" style={{fontSize:17,maxWidth:720,margin:0}}>Data-analyse op volledige populaties doet u misschien al. Wat AI hier toevoegt: uitleg in natuurlijke taal en suggesties voor vervolgvragen — voor u als derde lijn.</p>
+                </>}
+                {phase==='sample' && <>
+                  <div className="al-display" style={{fontSize:42,fontWeight:500,lineHeight:1.15,marginBottom:12}}>25 willekeurige facturen. <span className="al-soft">0 bevindingen.</span></div>
+                  <p className="al-soft" style={{fontSize:17,margin:0}}>De steekproef werkt zoals altijd. Niets opmerkelijks. Laten we nu de andere kant op kijken.</p>
+                </>}
+                {phase==='scanning' && <>
+                  <div className="al-display" style={{fontSize:42,fontWeight:500,lineHeight:1.15,marginBottom:12}}>AuditLens toetst de werking…</div>
+                  <p className="al-soft" style={{fontSize:17,margin:0}}>Niet of de controles bestaan — of ze afdekken wat ze moeten afdekken.</p>
+                </>}
+                {isControls && <>
+                  <div className="al-display" style={{fontSize:42,fontWeight:500,lineHeight:1.15,marginBottom:12,maxWidth:880}}>Zes controles. 847 transacties.<br/><span className="al-green">Nul bevindingen.</span></div>
+                  <p className="al-soft" style={{fontSize:17,maxWidth:720,margin:0}}>Op papier draait het systeem perfect. Maar de vraag is niet of de controles vuren — de vraag is of ze de juiste dingen zien.</p>
+                </>}
+                {isAnomalies && <>
+                  <div className="al-display" style={{fontSize:42,fontWeight:500,lineHeight:1.15,marginBottom:12,maxWidth:880}}>Drie gevallen. <span className="al-rust">Geen van deze controles</span> zou ze hebben opgemerkt.</div>
+                  <p className="al-soft" style={{fontSize:17,maxWidth:720,margin:0}}>AuditLens analyseerde de volledige populatie in <span className="al-mono">2,7 sec</span>. Klik op een geval om de redenering te zien.</p>
+                </>}
+              </div>
+
+              {/* STATS */}
+              <div className="stat-grid" style={{marginBottom:48}}>
+                <StatTile label="Populatie" value={TOTAL_INVOICES.toLocaleString('nl-NL')} sub="transacties" />
+                <StatTile label="Controles" value="6" sub="raamwerk Q3 2025" highlight={isControls} />
+                <StatTile label="Steekproef" value={String(SAMPLE_SIZE)} sub="3% · willekeurig" dimmed={phase==='idle'} highlight={phase==='sample'} />
+                <StatTile label="AI-bevindingen" value={isAnomalies?'3':(isControls?'?':'—')} sub={isAnomalies?'binnen 2,7 sec':(isControls?'nog te onthullen':'nog niet gedraaid')} highlight={isAnomalies} rust={isAnomalies} />
+              </div>
+
+              {/* DOT GRID */}
+              <div className="al-card" style={{padding:40,marginBottom:32,display:'flex',flexDirection:'column',alignItems:'center'}}>
+                <DotGrid phase={phase} decidedIds={Object.keys(decisions)} />
+                <div style={{marginTop:32,display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',maxWidth:760}}>
+                  <div style={{display:'flex',alignItems:'center',gap:24}} className="al-tag">
+                    <span style={{display:'flex',alignItems:'center',gap:8}}><span className="al-dot" style={{width:10,height:10}} /> transactie</span>
+                    <span style={{display:'flex',alignItems:'center',gap:8}}><span className="al-dot al-dot-sample" style={{width:10,height:10}} /> in steekproef</span>
+                    {isAnomalies && <span style={{display:'flex',alignItems:'center',gap:8}}><span className="al-dot" style={{width:10,height:10,background:'var(--rust)',boxShadow:'0 0 0 2px var(--rust-soft)'}} /> niet afgedekt</span>}
+                  </div>
+                  <span className="al-tag al-slate">1 punt ≈ 4 transacties</span>
+                </div>
+              </div>
+
+              {/* STATUS BAR */}
+              <div className="al-card" style={{padding:24,marginBottom:48}}>
+                {phase==='idle' && <div className="status-action">
+                  <div className="al-statusline">Hoe wilt u beginnen — de gebruikelijke steekproef, of AI op de werking van het hele raamwerk?</div>
+                  <div style={{display:'flex',gap:12}}>
+                    <button onClick={()=>setPhase('sample')} className="al-btn-ghost">Toon traditionele steekproef</button>
+                    <button onClick={()=>setPhase('scanning')} className="al-btn-primary">✦ Toets controles met AI</button>
+                  </div>
+                </div>}
+                {phase==='sample' && <div className="status-action">
+                  <div>
+                    <div className="al-tag" style={{marginBottom:4}}>Steekproef getrokken</div>
+                    <div style={{fontSize:16}}>Inhoudelijke toets levert <span className="al-mono">0 bevindingen</span> op. <span className="al-soft">Geen rode vlaggen.</span></div>
+                  </div>
+                  <button onClick={()=>setPhase('scanning')} className="al-btn-primary">✦ Toets nu de werking van de controles →</button>
+                </div>}
+                {phase==='scanning' && <div style={{display:'flex',alignItems:'center',gap:16}}>
+                  <span className="scan-badge">AI</span>
+                  <span className="al-statusline al-statusline-active al-pulse-cursor">{scanMessages[scanMsgIdx]}</span>
+                </div>}
+                {isControls && <div className="status-action">
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <span style={{color:'var(--green)'}}>✓</span>
+                    <span className="al-mono" style={{fontSize:12}}>analyse voltooid · 2,7 sec · 6 controles getoetst · 0 formele bevindingen</span>
+                  </div>
+                  <button onClick={()=>setPhase('revealed_anomalies')} className="al-btn-rust">⊙ Toon wat deze controles níet hebben gezien →</button>
+                </div>}
+                {isAnomalies && <div className="status-action">
+                  <div style={{display:'flex',alignItems:'center',gap:12}}>
+                    <span style={{color:'var(--rust)'}}>⚠</span>
+                    <span className="al-mono" style={{fontSize:12}}>3 gevallen onthuld · niet afgedekt door bestaande controles</span>
+                  </div>
+                  <div className="al-soft" style={{fontSize:14}}>Handmatig vergelijkbaar werk: ± <span className="al-mono">14 werkdagen</span></div>
+                </div>}
+              </div>
+
+              {isRevealed && <ControlsBlock phase={phase} />}
+
+              {isAnomalies && <>
+                <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:24}}>
+                  <div className="al-display" style={{fontSize:22,fontWeight:500}}>De drie gevallen</div>
+                  <div className="al-tag">AI signaleert · u beoordeelt</div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:16,marginBottom:48}}>
+                  {ANOMALIES.map((a,idx)=>(
+                    <AnomalyCard key={a.id} anomaly={a} decision={decisions[a.id]} onClick={()=>setSelected(a.id)} delay={idx*0.15+'s'} />
+                  ))}
+                </div>
+              </>}
+            </div>
+          )}
+
+          {selAnomaly && <DetailView
+            anomaly={selAnomaly}
+            decision={decisions[selAnomaly.id]}
+            followUpsRevealed={!!followUpsRevealed[selAnomaly.id]}
+            onBack={()=>setSelected(null)}
+            onDecide={(kind)=>decide(selAnomaly.id,kind)}
+            onRevealFollowUps={()=>setFollowUpsRevealed(p=>({...p,[selAnomaly.id]:true}))}
+          />}
+        </div>
+      </main>
+
+      <footer style={{borderTop:'1px solid var(--line)',marginTop:48}}>
+        <div className="footer-inner al-tag">
+          <span>IIA Congres 2026 · Pride &amp; Prejudice</span>
+          <span>Van vinken naar vonken</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
 </html>
